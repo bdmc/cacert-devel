@@ -302,6 +302,53 @@ function buildSubjectFromSession() {
 			$csr = clean_csr($_REQUEST['optionalCSR']);
 		}
 
+		if ( $_FILES[ 'CSRFile' ][ 'size' ] > 0 &&
+			!(trim( $_FILES[ 'CSRFile' ][ 'tmp_name' ] ) == 'none' || trim( $_FILES[ 'CSRFile' ][ 'tmp_name' ] ) == "")
+		) {
+			$oldid = 4;
+
+			$uploadfile = tempnam( sys_get_temp_dir(), 'csr' );
+
+			if ( is_uploaded_file( $_FILES[ 'CSRFile' ][ 'tmp_name' ] ) ) {
+				if ( move_uploaded_file( $_FILES[ 'CSRFile' ][ 'tmp_name' ], $uploadfile ) ) {
+					echo "File is valid, and was successfully uploaded.\n";
+
+					$file_contents = file_get_contents( $uploadfile );
+
+					//
+					// Determine whether this is a text file or a binary file
+					//
+					$is_text = strpos( $file_contents, 'BEGIN CERTIFICATE' );
+
+					if ( $is_text ) {
+						$csr = clean_csr( $file_contents );
+					} else {
+						//
+						// Then, if it is binary, convert it back to text
+						//
+						$handle        = popen( "openssl req -in $uploadfile -inform der " );
+						$file_contents = file_get_contents( $handle );
+						$ret           = pclose( $handle );
+						if ( $ret ) {
+							$id    = 4;
+							$oldid = "";
+
+							echo "Error: Invalid CSR File uploaded!";
+						} else {
+							$oldid                 = 4;
+							$csr                   = clean_csr( $file_contents );
+							$_REQUEST[ 'keytype' ] = "MS";
+						}
+					}
+				} else {
+					echo "Possible file upload attack!\n";
+				}
+			} else {
+				echo "Possible file upload attack!\n";
+			}
+
+		}
+
 		$_SESSION['_config']['description']= trim(stripslashes($_REQUEST['description']));
 	}
 

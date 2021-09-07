@@ -152,13 +152,17 @@ if($_SESSION['profile']['points'] >= 50)
     </td>
   </tr>
 
-  <tr name="expert">
-    <td class="DataTD" colspan="2">
-      <label for="optionalCSR"><?=_("Optional Client CSR, no information on the certificate will be used")?></label><br />
-      <textarea id="optionalCSR" name="optionalCSR" cols="80" rows="5"></textarea>
-    </td>
-  </tr>
-
+    <tr name="expert">
+        <td class="DataTD" colspan="2">
+            <p><?= _( "You may either upload a CSR file, or paste the text contents of that file into the box below.  One of the two are required." ) ?>
+                <br/>
+				<?= _( "You may upload a CSR file in either DER or PEM ( .pem, .der or .p10 ) format." ) ?></p>
+            <label for="uploadCSR"><?= _( "Upload Client CSR File." ) ?></label><input type="file" id="CSRFile"
+                                                                                       name="CSRFile"><br/>
+            <label for="optionalCSR"><?= _( "Paste Client CSR, no information on the certificate will be used" ) ?></label><br/>
+            <textarea id="optionalCSR" name="optionalCSR" cols="80" rows="5"></textarea>
+        </td>
+    </tr>
 
   <tr>
     <td class="DataTD">
